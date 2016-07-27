@@ -11,12 +11,16 @@ I'm calling this a "Beta 1" for now, in the spirit of the .NET Core betas, which
 To use this tool, reference it in your `project.json` "tools" section, like this:
 ```json
 {
-  // ...blahblah - I know this isn't proper JSON
+  "dependencies": {},
+  "frameworks": {},
   "tools": {
     "BitThicket.DotNet.ScriptTool": "0.1.0-beta-1-*"
   }
+}
 ```
-This will make the command available in your project directory(-ies) as `dotnet script`.  It takes one argument, the path of a script file.  I'm using `.csx` for script files, so for me it would look like this:
+The only caveat here is that I'm distributing this as a portable binary, which means *you have to have .NET Core installed* on the machine where this is done.  This will make the command available in your project directory(-ies) as `dotnet script`.  
+
+It takes one argument, the path of a script file.  I'm using `.csx` for script files, so for me it would look like this:
 
 `dotnet script test.csx`
 
