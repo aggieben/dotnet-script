@@ -5,6 +5,20 @@
     "emitEntryPoint": true,
     "outputName": "dotnet-script"
   },
+  "packOptions": {
+      "repository": {
+          "type": "git",
+          "url": "https://github.com/aggieben/dotnet-script"
+      },
+      "licenseUrl": "https://github.com/aggieben/dotnet-script/blob/master/LICENSE.md",
+      "owners": [
+          "Ben Collins (@aggieben)"
+      ],
+      "tags": [
+          "dotnet",
+          ".NET Core"
+      ]
+  },
   "dependencies": {
       "Microsoft.CodeAnalysis.CSharp.Scripting": "1.3.2"
   },
