@@ -33,8 +33,6 @@
 
             var script = CSharpScript.Create(scriptText, scriptOptions, typeof(Globals));
 
-            new DirectoryInfo("/").GetFiles().FirstOrDefault();
-
             try
             {
                 var scriptArgs = new string[args.Length-1];
