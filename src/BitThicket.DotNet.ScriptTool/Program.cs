@@ -17,7 +17,13 @@
                 return;
             }
 
-            var scriptText = File.ReadAllText(args[0]);
+            var assPath = Path.GetDirectoryName(
+                Assembly.GetEntryAssembly()
+                        .GetReferencedAssemblies()
+                        .Select(a => Assembly.Load(a).Location)
+                        .First());
+
+            Console.WriteLine($"Assembly path: {assPath}");
 
             var scriptOptions = ScriptOptions.Default
                 .WithReferences(
@@ -29,8 +35,10 @@
                     typeof(System.IO.File).GetTypeInfo().Assembly,                                          // System.IO.FileSystem
                     typeof(System.Linq.Enumerable).GetTypeInfo().Assembly,                                  // System.Linq
                     typeof(Newtonsoft.Json.JsonConvert).GetTypeInfo().Assembly                              // Newtonsoft.Json.NetCore
-                );
-
+                )
+                .WithMetadataResolver(ScriptMetadataResolver.Default.WithSearchPaths(assPath));
+            
+            var scriptText = File.ReadAllText(args[0]);
             var script = CSharpScript.Create(scriptText, scriptOptions, typeof(Globals));
 
             try
