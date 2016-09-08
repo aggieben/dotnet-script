@@ -1,5 +1,10 @@
 {
-    "projects": [ "src", "samples", "test" ],
+    "projects": [ 
+        "src",
+        "sm/corefxlab/src", 
+        "samples", 
+        "test" 
+    ],
     "sdk": {
         "version": "1.0.0-preview2-003121"
     }

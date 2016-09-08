@@ -1,21 +1,37 @@
 ﻿namespace BitThicket.DotNet.ScriptTool
 {
     using System;
+    using System.CommandLine;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Reflection;
     using Microsoft.CodeAnalysis.CSharp.Scripting;
     using Microsoft.CodeAnalysis.Scripting;
+    using Microsoft.Extensions.Logging;
 
     public class Program
     {
+
+
         public static void Main(string[] args)
         {
-            if (args.Length == 0)
+            var options = Options.Default;
+
+            string scriptPath = null;
+
+            ArgumentSyntax.Parse(args, syntax => 
             {
-                Console.WriteLine("Print Help Here");
-                return;
-            }
+                syntax.DefineOption("l|loglevel", ref options.LogLevel, ParseLogLevel, "log level, one of [trace, debug, information, warning, error, critical, none]");
+
+                syntax.DefineParameter("scriptPath", ref scriptPath, "script to run.  (required)");
+            });        
+
+            var loggerFactory = new LoggerFactory()                
+                .AddConsole(options.LogLevel)
+                // TODO: add TraceSource logger here
+                ;
+            var logger = loggerFactory.CreateLogger("dotnet-script");
 
             var assPath = Path.GetDirectoryName(
                 Assembly.GetEntryAssembly()
@@ -23,7 +39,7 @@
                         .Select(a => Assembly.Load(a).Location)
                         .First());
 
-            Console.WriteLine($"Assembly path: {assPath}");
+            logger.LogDebug($"Assembly path: {assPath}");
 
             var scriptOptions = ScriptOptions.Default
                 .WithReferences(
@@ -31,13 +47,14 @@
                     typeof(System.Runtime.InteropServices.RuntimeInformation).GetTypeInfo().Assembly,       // System.Runtime.?
                     typeof(System.Collections.Generic.IEnumerable<>).GetTypeInfo().Assembly,                // ?
                     typeof(System.Console).GetTypeInfo().Assembly,                                          // System.Console
-                    typeof(System.Diagnostics.Trace).GetTypeInfo().Assembly,                                // System.Diagnostics.TraceSource
                     typeof(System.IO.File).GetTypeInfo().Assembly,                                          // System.IO.FileSystem
-                    typeof(System.Linq.Enumerable).GetTypeInfo().Assembly                                   // System.Linq
+                    typeof(System.Linq.Enumerable).GetTypeInfo().Assembly,                                   // System.Linq
+                    typeof(ILogger).GetTypeInfo().Assembly
                 )
+                .WithImports("Microsoft.Extensions.Logging")
                 .WithMetadataResolver(ScriptMetadataResolver.Default.WithSearchPaths(assPath));
             
-            var scriptText = File.ReadAllText(args[0]);
+            var scriptText = File.ReadAllText(scriptPath);
             var script = CSharpScript.Create(scriptText, scriptOptions, typeof(Globals));
 
             try
@@ -47,7 +64,8 @@
 
                 script.RunAsync(new Globals
                 { 
-                    Args = scriptArgs
+                    Args = scriptArgs,
+                    Logger = loggerFactory.CreateLogger(Path.GetFileName(scriptPath))
                 })
                 .GetAwaiter().GetResult();
             }
@@ -59,6 +77,14 @@
             {
                 Console.Error.WriteLine("Execution error: {0}", e);
             }
+        }
+
+        private static LogLevel ParseLogLevel(string val)
+        {
+            Console.WriteLine("shouldn't be here!");
+            LogLevel level = LogLevel.Information;
+            Enum.TryParse(val, true, out level);
+            return level;
         }
     }
 }
