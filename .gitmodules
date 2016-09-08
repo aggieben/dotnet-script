@@ -1,0 +1,3 @@
+[submodule "sm/corefxlab"]
+	path = sm/corefxlab
+	url = git@github.com:aggieben/corefxlab.git
