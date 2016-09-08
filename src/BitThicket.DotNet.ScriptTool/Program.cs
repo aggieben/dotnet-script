@@ -33,8 +33,7 @@
                     typeof(System.Console).GetTypeInfo().Assembly,                                          // System.Console
                     typeof(System.Diagnostics.Trace).GetTypeInfo().Assembly,                                // System.Diagnostics.TraceSource
                     typeof(System.IO.File).GetTypeInfo().Assembly,                                          // System.IO.FileSystem
-                    typeof(System.Linq.Enumerable).GetTypeInfo().Assembly,                                  // System.Linq
-                    typeof(Newtonsoft.Json.JsonConvert).GetTypeInfo().Assembly                              // Newtonsoft.Json.NetCore
+                    typeof(System.Linq.Enumerable).GetTypeInfo().Assembly                                   // System.Linq
                 )
                 .WithMetadataResolver(ScriptMetadataResolver.Default.WithSearchPaths(assPath));
             
