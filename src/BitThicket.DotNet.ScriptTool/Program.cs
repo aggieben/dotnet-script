@@ -1,8 +1,8 @@
 ﻿namespace BitThicket.DotNet.ScriptTool
 {
     using System;
+    using System.Collections.Generic;
     using System.CommandLine;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -12,19 +12,19 @@
 
     public class Program
     {
-
-
         public static void Main(string[] args)
         {
             var options = Options.Default;
 
             string scriptPath = null;
+            IReadOnlyList<string> scriptArgs = null;
 
             ArgumentSyntax.Parse(args, syntax => 
             {
                 syntax.DefineOption("l|loglevel", ref options.LogLevel, ParseLogLevel, "log level, one of [trace, debug, information, warning, error, critical, none]");
 
                 syntax.DefineParameter("scriptPath", ref scriptPath, "script to run.  (required)");
+                syntax.DefineParameterList("scriptArguments", ref scriptArgs, "arguments to be passed through to the script");
             });        
 
             var loggerFactory = new LoggerFactory()                
@@ -59,12 +59,9 @@
 
             try
             {
-                var scriptArgs = new string[args.Length-1];
-                Array.Copy(args, 1, scriptArgs, 0, args.Length-1);
-
                 script.RunAsync(new Globals
                 { 
-                    Args = scriptArgs,
+                    Args = scriptArgs.ToArray(),
                     Logger = loggerFactory.CreateLogger(Path.GetFileName(scriptPath))
                 })
                 .GetAwaiter().GetResult();
@@ -81,7 +78,6 @@
 
         private static LogLevel ParseLogLevel(string val)
         {
-            Console.WriteLine("shouldn't be here!");
             LogLevel level = LogLevel.Information;
             Enum.TryParse(val, true, out level);
             return level;
