@@ -62,7 +62,8 @@
                 script.RunAsync(new Globals
                 { 
                     Args = scriptArgs.ToArray(),
-                    Logger = loggerFactory.CreateLogger(Path.GetFileName(scriptPath))
+                    Logger = loggerFactory.CreateLogger(Path.GetFileName(scriptPath)),
+                    RuntimeDir = assPath
                 })
                 .GetAwaiter().GetResult();
             }
