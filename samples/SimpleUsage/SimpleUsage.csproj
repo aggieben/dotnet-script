@@ -21,8 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="BitThicket.DotNet.ScriptTool">
-      <Version>0.1.1-beta-8</Version>
+    <DotNetCliToolReference Include="dotnet-script">
+      <Version>0.1.1-beta-12-1</Version>
     </DotNetCliToolReference>
   </ItemGroup>
 

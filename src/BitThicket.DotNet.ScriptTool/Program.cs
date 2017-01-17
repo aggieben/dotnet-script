@@ -22,10 +22,16 @@
             ArgumentSyntax.Parse(args, syntax => 
             {
                 syntax.DefineOption("l|loglevel", ref options.LogLevel, ParseLogLevel, "log level, one of [trace, debug, information, warning, error, critical, none]");
-
+                syntax.DefineOption("V|version", ref options.VersionSwitch, "print tool version");
                 syntax.DefineParameter("scriptPath", ref scriptPath, "script to run.  (required)");
                 syntax.DefineParameterList("scriptArguments", ref scriptArgs, "arguments to be passed through to the script");
-            });        
+            });
+
+            if (options.VersionSwitch)
+            {
+                Console.WriteLine("dotnet-script v{0}", Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.ApplicationVersion);
+                return;
+            }
 
             var loggerFactory = new LoggerFactory()                
                 .AddConsole(options.LogLevel)
@@ -41,8 +47,7 @@
 
             logger.LogDebug($"Assembly path: {assPath}");
 
-            var scriptOptions = ScriptOptions.Default
-                .WithReferences(
+            var references = new[] {
                     typeof(System.Object).GetTypeInfo().Assembly,                                           // mscorlib
                     typeof(System.Runtime.InteropServices.RuntimeInformation).GetTypeInfo().Assembly,       // System.Runtime.?
                     typeof(System.Collections.Generic.IEnumerable<>).GetTypeInfo().Assembly,                // ?
@@ -50,7 +55,12 @@
                     typeof(System.IO.File).GetTypeInfo().Assembly,                                          // System.IO.FileSystem
                     typeof(System.Linq.Enumerable).GetTypeInfo().Assembly,                                   // System.Linq
                     typeof(ILogger).GetTypeInfo().Assembly
-                )
+            };
+
+            logger.LogDebug("Assembly references: {0}", references.Select(r => r.FullName));
+
+            var scriptOptions = ScriptOptions.Default
+                .WithReferences(references)
                 .WithImports("Microsoft.Extensions.Logging")
                 .WithMetadataResolver(ScriptMetadataResolver.Default.WithSearchPaths(assPath));
             
