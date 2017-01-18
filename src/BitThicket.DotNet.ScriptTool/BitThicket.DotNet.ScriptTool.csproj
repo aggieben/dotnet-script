@@ -5,17 +5,24 @@
     <AssemblyName>dotnet-script</AssemblyName>
     <TargetFramework>netcoreapp1.0</TargetFramework>
     <OutputType>exe</OutputType>
-    <PackageType>DotnetCliTool</PackageType>
     <PackageTags>dotnet;.NET Core</PackageTags>
     <PackageLicenseUrl>https://github.com/aggieben/dotnet-script/blob/master/LICENSE.md</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/aggieben/dotnet-script</RepositoryUrl>
+    <PackageType>DotnetCliTool</PackageType>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="**\*.cs" />
     <EmbeddedResource Include="**\*.resx" />
     <EmbeddedResource Include="compiler\resources\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="$(OutputPath)*.runtimeconfig.json">
+        <Pack>true</Pack>
+        <PackagePath>lib\$(TargetFramework)</PackagePath>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
